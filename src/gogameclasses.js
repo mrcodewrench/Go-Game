@@ -38,7 +38,7 @@ function Internals(game){
     this.attemptPlaceStoneFromUI = function(loc) {
         var x = loc.split(",")[0]*1;
         var y = parseInt(loc.split(",")[1]);
-        if(Game.isBlackTurn)
+        if(game.isBlackTurn)
             attemptPlaceStone(black, x, y);
         else
             attemptPlaceStone(white, x, y);
@@ -46,18 +46,18 @@ function Internals(game){
     
     var createTempBoard = function(){
         tempBoard = [];
-        for(var q = 0; q < Game.size; q++)
+        for(var q = 0; q < game.size; q++)
         {
             tempBoard.push([]);
-            for(var w = 0; w < Game.size; w++)
+            for(var w = 0; w < game.size; w++)
             {
-                tempBoard[q].push(Game.board[q][w]);
+                tempBoard[q].push(game.board[q][w]);
             }
         }
     };
     
     var attemptPlaceStone = function(user,x,y){
-        if(Game.board[y][x] != "0"){
+        if(game.board[y][x] != "0"){
             alert("Occupied");
             return "Occupied";
         }
@@ -73,7 +73,7 @@ function Internals(game){
         placeStone(user, x, y);
         
         var chainsKilled = 0;
-        if(y+1 <= Game.size -1 && tempBoard[y+1][x] === opponent && checkForBreath(opponent,x,y+1) === "invalid"){
+        if(y+1 <= game.size -1 && tempBoard[y+1][x] === opponent && checkForBreath(opponent,x,y+1) === "invalid"){
             killChain(opponent,x,y+1);
             chainsKilled++;
         }
@@ -81,7 +81,7 @@ function Internals(game){
             killChain(opponent,x,y-1);
             chainsKilled++;
         }
-        if(x+1 <= Game.size-1 && tempBoard[y][x+1] === opponent && checkForBreath(opponent,x+1,y) === "invalid"){
+        if(x+1 <= game.size-1 && tempBoard[y][x+1] === opponent && checkForBreath(opponent,x+1,y) === "invalid"){
             killChain(opponent,x+1,y);
             chainsKilled++;
         }
@@ -93,11 +93,11 @@ function Internals(game){
             alert("suicide");
             return "suicide";
         }else {
-            Game.moveLog.push(user +"," + x + "," + y)
-            updateGameBoard();
+            game.moveLog.push(user +"," + x + "," + y)
+            updategameBoard();
             // Update UI
             var loc = x + "," + y;
-            if(Game.isBlackTurn){
+            if(game.isBlackTurn){
                 document.getElementById(loc).style.backgroundColor = "black";
             }
             else{
@@ -112,7 +112,7 @@ function Internals(game){
     var checkForBreath = function(user,x,y){
         var moveLocation = x + "," + y;
         
-        if (y+1 <= Game.size-1 && tempBoard[y+1][x] === "0"){
+        if (y+1 <= game.size-1 && tempBoard[y+1][x] === "0"){
             tempChain = [];
             return "valid";
         }
@@ -120,7 +120,7 @@ function Internals(game){
             tempChain = [];
             return "valid";
         }
-        if(x+1 <= Game.size-1 && tempBoard[y][x+1] === "0"){
+        if(x+1 <= game.size-1 && tempBoard[y][x+1] === "0"){
             tempChain = [];
             return "valid";
         }
@@ -130,13 +130,13 @@ function Internals(game){
         } else {
             //place current stone coordinates into tempChain
             tempChain.push(moveLocation);
-            if(y+1 <= Game.size -1 && tempBoard[y+1][x] === user && tempChain.indexOf(x + "," + (y+1)) === -1 ){
+            if(y+1 <= game.size -1 && tempBoard[y+1][x] === user && tempChain.indexOf(x + "," + (y+1)) === -1 ){
                 return checkForBreath(user, x, y+1);
             }
             if(y-1 >=0 && tempBoard[y-1][x] === user && tempChain.indexOf(x + "," + (y-1)) === -1 ){
                 return checkForBreath(user, x, y-1)
             }
-            if(x+1 <= Game.size-1 && tempBoard[y][x+1] === user && tempChain.indexOf((x+1) + "," + y) === -1){
+            if(x+1 <= game.size-1 && tempBoard[y][x+1] === user && tempChain.indexOf((x+1) + "," + y) === -1){
                 return checkForBreath(user, x+1, y);
             }
             if(x-1 >=0 && tempBoard[y][x-1] === user && tempChain.indexOf((x-1) + "," + y) === -1 ){
@@ -163,17 +163,17 @@ function Internals(game){
         removeStone(x,y);
         
         if(user === black)
-            document.getElementById("whiteHasCaptured").innerHTML = ++Game.whiteHasCaptured;
+            document.getElementById("whiteHasCaptured").innerHTML = ++game.whiteHasCaptured;
         else
-            document.getElementById("blackHasCaptured").innerHTML = ++Game.blackHasCaptured;
+            document.getElementById("blackHasCaptured").innerHTML = ++game.blackHasCaptured;
         
-        if(y+1 <= Game.size -1 && tempBoard[y+1][x] === user){
+        if(y+1 <= game.size -1 && tempBoard[y+1][x] === user){
             killChain(user,x,y+1);
         }
         if (y-1 >=0 && tempBoard[y-1][x] === user){
             killChain(user, x, y-1);
         }
-        if(x+1 <= Game.size-1 && tempBoard[y][x+1] === user){
+        if(x+1 <= game.size-1 && tempBoard[y][x+1] === user){
             killChain(user,x+1,y);
         }
         if (x-1 >=0 && tempBoard[y][x-1] === user){
@@ -188,28 +188,28 @@ function Internals(game){
         {
             for(var j = 0; j < tempBoard.length; j++)
             {
-                if(tempBoard[i][j] === Game.board[i][j]){
+                if(tempBoard[i][j] === game.board[i][j]){
                     matches++;
                 }
             }
         }
-        return (matches === Game.size * Game.size);
+        return (matches === game.size * game.size);
     };
     
-    var updateGameBoard = function(){
-    for (var i = 0; i < Game.size; i++) 
+    var updategameBoard = function(){
+    for (var i = 0; i < game.size; i++) 
         {
-            for(var j = 0; j < Game.size; j++)
+            for(var j = 0; j < game.size; j++)
             {
-                Game.board[i][j] = tempBoard[i][j];
+                game.board[i][j] = tempBoard[i][j];
             }
         }
     };
     
     var changeTurn = function(){
-        Game.isBlackTurn = !Game.isBlackTurn;
+        game.isBlackTurn = !game.isBlackTurn;
         
-        if(Game.isBlackTurn)
+        if(game.isBlackTurn)
             document.getElementById("whoseTurn").innerHTML = "Black's turn";
         else
             document.getElementById("whoseTurn").innerHTML = "White's turn";
@@ -225,9 +225,5 @@ function Internals(game){
         
 //     }
 // }
-
-var game = new Display();
-var logic = new Internals(game);
-
-// var game = new Game(new Logic());
-// game.Initialize();
+var go = new Display();
+var logic = new Internals(go);
