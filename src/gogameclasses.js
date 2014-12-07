@@ -34,6 +34,9 @@ function Internals(game){
     var white = "W";
     var black = "B";
     var tempBoard = [];
+    // blank board for testing
+    this.tempBoard = tempBoard;
+    //end test code
     
     this.attemptPlaceStoneFromUI = function(loc) {
         var x = loc.split(",")[0]*1;
@@ -55,7 +58,9 @@ function Internals(game){
             }
         }
     };
-    
+    //public for test code
+    this.createTempBoardTest = createTempBoard;
+    //end test code
     var attemptPlaceStone = function(user,x,y){
         if(game.board[y][x] != "0"){
             alert("Occupied");
@@ -152,6 +157,9 @@ function Internals(game){
     var placeStone = function(user, x, y){
         tempBoard[y][x] = user;
     };
+    //test code
+    this.placeStoneTest = placeStone;
+    //end testcode
 
     var removeStone = function(x,y){
         tempBoard[y][x] = "0";
@@ -227,3 +235,15 @@ function Internals(game){
 // }
 var go = new Display();
 var logic = new Internals(go);
+// blank board for
+//  var testBoard = [   ["0","0","0","0","0","0","0","0","0"],
+//                     ["0","0","0","0","0","0","0","0","0"],
+//                     ["0","0","0","0","0","0","0","0","0"],
+//                     ["0","0","0","0","0","0","0","0","0"],
+//                     ["0","0","0","0","0","0","0","0","0"],
+//                     ["0","0","0","0","0","0","0","0","0"],
+//                     ["0","0","0","0","0","0","0","0","0"],
+//                     ["0","0","0","0","0","0","0","0","0"],
+//                     ["0","0","0","0","0","0","0","0","0"],
+//                 ];
+//
