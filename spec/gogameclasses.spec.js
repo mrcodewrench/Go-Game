@@ -2,7 +2,7 @@
 //check for how to make it look for equal array values...
 describe("boardMatcher", function() {
     it("should return true for exact matching board", function() {
-        logic.tempBoard = [ ["0","0","0","0","0","0","0","0","0"],
+        var testBoard = [   ["0","0","0","0","0","0","0","0","0"],
                             ["0","0","0","0","0","0","0","0","0"],
                             ["0","0","0","0","0","0","0","0","0"],
                             ["0","0","0","0","0","0","0","0","0"],
@@ -12,7 +12,7 @@ describe("boardMatcher", function() {
                             ["0","0","0","0","0","0","0","0","0"],
                             ["0","0","0","0","0","0","0","0","0"],];
                             
-        go.board = [        ["0","0","0","0","0","0","0","0","0"],
+        var testBoard2 = [  ["0","0","0","0","0","0","0","0","0"],
                             ["0","0","0","0","0","0","0","0","0"],
                             ["0","0","0","0","0","0","0","0","0"],
                             ["0","0","0","0","0","0","0","0","0"],
@@ -22,11 +22,11 @@ describe("boardMatcher", function() {
                             ["0","0","0","0","0","0","0","0","0"],
                             ["0","0","0","0","0","0","0","0","0"],];
         
-        expect(logic.boardMatcher(logic.tempBoard,go.board)).toBe(true);
+        expect(logic.boardMatcher(testBoard,testBoard2)).toBe(true);
         
     });
     it("should return true for exact matching board", function() {
-        logic.tempBoard = [ ["0","W","0","0","0","0","0","0","0"],
+        var testBoard = [   ["0","W","0","0","0","0","0","0","0"],
                             ["0","0","0","0","0","0","0","0","0"],
                             ["0","0","0","0","0","0","0","0","0"],
                             ["0","0","0","0","W","0","0","0","0"],
@@ -36,7 +36,7 @@ describe("boardMatcher", function() {
                             ["0","0","0","0","0","0","0","0","0"],
                             ["0","0","0","0","0","0","0","0","0"],];
                             
-        go.board = [        ["0","0","0","0","0","0","0","0","0"],
+        var testBoard2 = [  ["0","0","0","0","0","0","0","0","0"],
                             ["0","0","0","0","0","0","0","0","0"],
                             ["0","0","0","0","0","0","0","0","0"],
                             ["0","0","0","0","0","0","0","0","0"],
@@ -46,11 +46,11 @@ describe("boardMatcher", function() {
                             ["0","0","0","0","0","0","0","0","0"],
                             ["0","0","0","0","0","0","0","0","0"],];
         
-        expect(logic.boardMatcher(logic.tempBoard,go.board)).toBe(false);
+        expect(logic.boardMatcher(testBoard,testBoard2)).toBe(false);
         
     });
     it("should return true for exact matching board", function() {
-        logic.tempBoard = [ ["0","W","0","0","0","0","0","0","0"],
+        var testBoard = [   ["0","W","0","0","0","0","0","0","0"],
                             ["0","0","0","0","0","0","0","0","0"],
                             ["0","0","0","0","0","0","0","0","0"],
                             ["0","0","0","0","W","0","0","0","0"],
@@ -60,7 +60,7 @@ describe("boardMatcher", function() {
                             ["0","0","0","0","0","0","0","0","0"],
                             ["0","0","0","0","0","0","0","0","0"],];
                             
-        go.board = [        ["0","0","0","0","0","0","0","0","0"],
+        var testBoard2 = [  ["0","0","0","0","0","0","0","0","0"],
                             ["0","0","0","0","0","0","0","0","0"],
                             ["0","0","0","0","0","0","0","0","0"],
                             ["0","0","0","0","0","0","0","0","0"],
@@ -70,11 +70,11 @@ describe("boardMatcher", function() {
                             ["0","0","0","0","0","0","0","0","0"],
                             ["0","0","0","0","0","0","0","0","0"],];
         
-        expect(logic.boardMatcher(logic.tempBoard,go.board)).toBe(false);
+        expect(logic.boardMatcher(testBoard,testBoard2)).toBe(false);
         
     });
     it("should return true for exact matching board", function() {
-        logic.tempBoard = [ ["W","0","0","0","0","0","0","0","0"],
+        var testBoard = [   ["W","0","0","0","0","0","0","0","0"],
                             ["0","0","B","B","0","0","0","0","0"],
                             ["0","0","0","0","0","0","0","0","0"],
                             ["0","0","0","0","0","0","0","0","0"],
@@ -84,7 +84,7 @@ describe("boardMatcher", function() {
                             ["0","0","0","0","0","0","0","0","0"],
                             ["0","0","0","0","0","0","0","0","0"],];
                             
-        go.board = [        ["W","0","0","0","0","0","0","0","0"],
+        var testBoard2 = [  ["W","0","0","0","0","0","0","0","0"],
                             ["0","0","B","B","0","0","0","0","0"],
                             ["0","0","0","0","0","0","0","0","0"],
                             ["0","0","0","0","0","0","0","0","0"],
@@ -94,7 +94,7 @@ describe("boardMatcher", function() {
                             ["0","0","0","0","0","0","0","0","0"],
                             ["0","0","0","0","0","0","0","0","0"],];
         
-        expect(logic.boardMatcher(logic.tempBoard,go.board)).toBe(true);
+        expect(logic.boardMatcher(testBoard,testBoard2)).toBe(true);
         
     });
     
@@ -113,14 +113,20 @@ describe("placeStone", function() {
                         ["0","0","0","0","0","0","0","0","0"],
                         ["0","0","0","0","0","0","0","0","0"],];
 });
-   it("should place a white stone at 0,0", function() {
-        logic.placeStone(logic.white,0,0);
-        logic.updateGameBoard();
-        expect(logic.boardMatcher(logic.tempBoard,go.board)).toBe(true);
-       
-   });
-   it("should place a black stone at 0,6", function() {
+    it("should place a black stone at 0,6", function() {
        logic.placeStone(logic.black,0,6);
        expect(logic.tempBoard[6][0]).toEqual("B");
+   });
+    it("should place a black stone at 2,6", function() {
+       logic.placeStone(logic.black,2,6);
+       expect(logic.tempBoard[6][2]).toEqual("B");
+   });
+    it("should place a white stone at 0,0", function() {
+       logic.placeStone(logic.white,0,0);
+       expect(logic.tempBoard[0][0]).toEqual("W");
+   });
+    it("should place a white stone at 8,8", function() {
+       logic.placeStone(logic.white,8,8);
+       expect(logic.tempBoard[8][8]).toEqual("W");
    });
 });
