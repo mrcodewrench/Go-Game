@@ -1,5 +1,6 @@
 describe("placeStone", function() {
    beforeEach(function() {
+    // KJL: don't refer to logic here. or anywhere, really. Your tests should be written as though "logic" and "go" don't exist. They're just artifacts of actually running your game.
     logic.tempBoard = [ ["0","0","0","0","0","0","0","0","0"],
                         ["0","0","0","0","0","0","0","0","0"],
                         ["0","0","0","0","0","0","0","0","0"],
@@ -11,7 +12,7 @@ describe("placeStone", function() {
                         ["0","0","0","0","0","0","0","0","0"],];
 });
     it("should place a black stone at 0,6", function() {
-       logic.placeStone(logic.black,0,6);
+       logic.placeStone(logic.black,0,6); // KJL: the fact that you reverse these is kinda funky, don't you think?
        expect(logic.tempBoard[6][0]).toEqual("B");
    });
     it("should place a black stone at 2,6", function() {
