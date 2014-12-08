@@ -1,5 +1,4 @@
 beforeEach(function() {
-  'use strict';
   this.addMatchers({
     toBeArray: function(array) {
       this.message = function() {
