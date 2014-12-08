@@ -92,7 +92,7 @@ function Internals(game){
             return "suicide";
         }else {
             game.moveLog.push(user +"," + x + "," + y)
-            this.updategameBoard();
+            this.updateGameBoard();
             // Update UI
             var loc = x + "," + y;
             if(game.isBlackTurn){
@@ -193,7 +193,7 @@ function Internals(game){
         return (matches === game.size * game.size);
     };
     
-    this.updategameBoard = function(){
+    this.updateGameBoard = function(){
         for (var i = 0; i < game.size; i++) 
         {
             for(var j = 0; j < game.size; j++)
@@ -211,6 +211,16 @@ function Internals(game){
         else
             document.getElementById("whoseTurn").innerHTML = "White's turn";
     };
+    this.boardMatcher = function(board1,board2){
+        for (var i = 0; i < game.size; i++) {
+            for (var j = 0; j < game.size; j++){
+                if(board1[i][j] != board2[i][j]){
+                    return false;
+                }
+            }
+        };
+        return true;
+    }
 };
 
 //for later game runs through moves and gets board state at given move position
