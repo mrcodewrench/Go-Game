@@ -2,7 +2,7 @@ function Display() {
     this.size = 9; //prompt("what size board would you like to play");
     this.moveLog = [];
     //var handicap = prompt("what will be white's handicap?")
-    this.isBlackTurn = true; 
+    this.isBlackTurn = true;
     this.blackHasCaptured = 0;
     this.whiteHasCaptured = 0;
     this.blankBoard = function(){
