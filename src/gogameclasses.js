@@ -226,11 +226,15 @@ function Internals(game){
 //for later game runs through moves and gets board state at given move position
 //for "ko" current temp board will match boardstate at move index - 2
 
-// var getBoardState = function(moveIndex){
-//     boardAtMove = blankBoard();
+// var getMoveArray = function (moveLocation){
+//  returns array with all the moves to be played to get boardState.
+// }
+// var getBoardState = function(moveArray){
+//     var boardToReturn = game.blankBoard();
 //     for(var i = 0 ; i <= moveIndex; i++){
-        
+//            this.attemptPlaceStone(moveIndex[i]);
 //     }
+//     return boardToReturn;
 // }
 var go = new Display();
 var logic = new Internals(go);
