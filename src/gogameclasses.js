@@ -153,7 +153,10 @@ function Internals(game){
     this.removeStone = function(x,y){
         this.tempBoard[y][x] = "0";
         var loc = x + "," + y;
-        document.getElementById(loc).style.backgroundColor = "gray";
+        var grayOutUI = function(place){
+            document.getElementById(loc).style.backgroundColor = "gray";
+        }
+        grayOutUI(loc);
     };
     
     this.killChain = function(user,x,y){
