@@ -21,8 +21,9 @@ describe("should remove a single stone... ", function() {
                             ["0","0","0","0","0","0","0","0","0"],
                             ["0","0","0","0","0","0","0","0","0"],
                             ["0","0","0","0","0","0","0","0","0"],];
-
+        spyOn(logic, 'grayOutUI');
         logic.removeStone(4,3);
+        expect(logic.grayOutUI).toHaveBeenCalled();
         expect(logic.boardMatcher(logic.tempBoard,testBoard)).toBe(true);
         
     });
@@ -47,7 +48,9 @@ describe("should remove a single stone... ", function() {
                             ["0","0","0","0","0","0","0","0","0"],
                             ["0","0","0","0","0","0","0","0","0"],];
 
+        spyOn(logic, 'grayOutUI');
         logic.removeStone(0,0);
+        expect(logic.grayOutUI).toHaveBeenCalled();
         expect(logic.boardMatcher(logic.tempBoard,testBoard)).toBe(true);
         
     });
@@ -71,9 +74,12 @@ describe("should remove a single stone... ", function() {
                             ["0","0","0","0","0","0","0","0","0"],
                             ["0","0","0","0","0","0","0","0","0"],
                             ["0","0","0","0","0","0","0","0","0"],];
-
+        
+        spyOn(logic, 'grayOutUI');
         logic.removeStone(0,0);
+        expect(logic.grayOutUI).toHaveBeenCalled();
         logic.removeStone(8,8);
+        expect(logic.grayOutUI).toHaveBeenCalled();
         expect(logic.boardMatcher(logic.tempBoard,testBoard)).toBe(true);
         
     });
@@ -98,7 +104,9 @@ describe("should remove a single stone... ", function() {
                             ["0","0","0","0","0","0","0","0","0"],
                             ["0","0","0","0","0","0","0","0","0"],];
 
+        spyOn(logic, 'grayOutUI');
         logic.removeStone(2,2);
+        expect(logic.grayOutUI).toHaveBeenCalled();
         expect(logic.boardMatcher(logic.tempBoard,testBoard)).toBe(true);
         
     });
