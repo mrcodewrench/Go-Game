@@ -25,7 +25,7 @@ describe("boardMatcher", function() {
         expect(logic.boardMatcher(testBoard,testBoard2)).toBe(true);
         
     });
-    it("should return true for exact matching board", function() {
+    it("should return false for non matching board", function() {
         var testBoard = [   ["0","W","0","0","0","0","0","0","0"],
                             ["0","0","0","0","0","0","0","0","0"],
                             ["0","0","0","0","0","0","0","0","0"],
@@ -49,7 +49,7 @@ describe("boardMatcher", function() {
         expect(logic.boardMatcher(testBoard,testBoard2)).toBe(false);
         
     });
-    it("should return true for exact matching board", function() {
+    it("should return false for non matching board", function() {
         var testBoard = [   ["0","W","0","0","0","0","0","0","0"],
                             ["0","0","0","0","0","0","0","0","0"],
                             ["0","0","0","0","0","0","0","0","0"],
