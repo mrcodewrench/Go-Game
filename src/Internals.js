@@ -3,6 +3,21 @@ function Internals(game){
     this.black = "B";
     this.tempBoard = game.blankBoard();
     
+    this.lookDir = function(x, y, stoneType, dir){
+        if (dir === "N"){
+            return y+1 <= game.size -1 && this.tempBoard[y+1][x] === stoneType;
+        };
+        if (dir === "S"){
+            return y-1 >= 0 && this.tempBoard[y-1][x] === stoneType;
+        };
+        if (dir === "E"){
+            return x+1 <= game.size -1 && this.tempBoard[y][x+1] === stoneType;
+        };
+        if (dir === "W"){
+            return x-1 >= 0 && this.tempBoard[y][x-1] === stoneType;
+        };
+    };
+    
     this.attemptPlaceStoneFromUI = function(loc) {
         var x = loc.split(",")[0]*1;
         var y = parseInt(loc.split(",")[1]);
@@ -22,6 +37,19 @@ function Internals(game){
         }
     };
     
+    this.chainNorth = [];
+    this.chainSouth = [];
+    this.chainEast = [];
+    this.chainWest = [];
+    this.chainsToRemove = [0,0,0,0];
+    this.initChains = function(){
+        this.chainNorth = [];
+        this.chainSouth = [];
+        this.chainEast = [];
+        this.chainWest = [];
+        this.chainsToRemove = [0,0,0,0];
+    };
+    
     this.attemptPlaceStone = function(user,x,y){
         if(game.board[y][x] != "0"){
             alert("Occupied");
@@ -34,31 +62,46 @@ function Internals(game){
         } else {
             opponent = this.white;
         }
-        
+        this.initChains();
         this.createTempBoard();
         this.placeStone(user, x, y);
         
+        var chainUser = this.makeChain(user, x, y);
         var chainsKilled = 0;
-        if(y+1 <= game.size -1 && this.tempBoard[y+1][x] === opponent && this.checkForBreath(opponent,x,y+1) === "invalid"){
-            this.killChain(opponent,x,y+1);
-            chainsKilled++;
-        }
-        if( y-1 >=0 && this.tempBoard[y-1][x] === opponent && this.checkForBreath(opponent,x,y-1) === "invalid"){
-            this.killChain(opponent,x,y-1);
-            chainsKilled++;
-        }
-        if(x+1 <= game.size-1 && this.tempBoard[y][x+1] === opponent && this.checkForBreath(opponent,x+1,y) === "invalid"){
-            this.killChain(opponent,x+1,y);
-            chainsKilled++;
-        }
-        if(x-1 >=0 && this.tempBoard[y][x-1] === opponent && this.checkForBreath(opponent,x-1,y) === "invalid"){
-            this.killChain(opponent,x-1,y);
-            chainsKilled++;
-        }
-        if(chainsKilled === 0 && this.checkForKo() === false && this.checkForBreath(user,x,y) === "invalid"){
+        if(this.lookDir(x, y, opponent, "N")){
+            this.chainNorth = this.makeChain(opponent, x, y+1);
+            if(!this.checkForBreath(this.chainNorth)){
+                this.chainsToRemove[0] = 1;
+                chainsKilled++;
+            }
+        };
+        if(this.lookDir(x, y, opponent, "S")){
+            this.chainSouth = this.makeChain(opponent, x, y-1);
+            if(!this.checkForBreath(this.chainSouth)){
+                this.chainsToRemove[1] = 1;
+                chainsKilled++;
+            }
+        };
+        if(this.lookDir(x, y, opponent, "E")){
+            this.chainEast = this.makeChain(opponent, x+1, y);
+            if(!this.checkForBreath(this.chainEast)){
+                this.chainsToRemove[2] = 1;
+                chainsKilled++;
+            }
+        };
+        if(this.lookDir(x, y, opponent, "W")){
+            this.chainWest = this.makeChain(opponent, x-1, y);
+            if(!this.checkForBreath(this.chainWest)){
+                this.chainsToRemove[3] = 1;
+                chainsKilled++;
+            }
+        };
+        if(chainsKilled === 0 && this.checkForKo() === false && this.checkForBreath(chainUser) === false){
             alert("suicide");
             return "suicide";
         }else {
+            this.chainCompare();
+            this.KillChain(user, this.chainsToRemove);
             game.moveLog.push(user +"," + x + "," + y)
             this.updateGameBoard();
             // Update UI
@@ -74,114 +117,123 @@ function Internals(game){
         //make room for ko function
     };
     
-    this.makeChain = function(user, x, y) {
-        var chainArray = [];
-        return makeChainHelper(user, x, y, chainArray);
+    this.checkForBreath = function(chainArray){
+        var breaths = 0;
+        if(chainArray.length > 0){
+            for(var i = 0; i < chainArray.length; i++){
+                var x = chainArray[i].split(",")[0]*1;
+                var y = chainArray[i].split(",")[1]*1;
+                if(this.lookDir(x, y, "0", "N")){
+                    breaths++;
+                }
+                if(this.lookDir(x, y, "0", "S")){
+                    breaths++;
+                }
+                if(this.lookDir(x, y, "0", "E")){
+                    breaths++;
+                }
+                if(this.lookDir(x, y, "0", "W")){
+                    breaths++;
+                }
+            }
+        }
+        if(breaths === 0){
+            return false;
+        }
+        else{
+            return true;
+        };
     };
-    
-    var makeChainHelper = function(user, x, y, chainArray) {
-        moveLocation = x + "," + y;
-        chainArray.push(moveLocation);
-        
-        // look north
-        if(lookDir(user, x, y+1, chainArray))
-            makeChainHelper(user, x, y+1, chainArray);
-        // look south
-        if(lookDir(user, x, y-1, chainArray))
-            makeChainHelper(user, x, y-1, chainArray);
-        // look east
-        if(lookDir(user, x+1, y, chainArray))
-            makeChainHelper(user, x+1, y, chainArray);
-        // look west
-        if(lookDir(user, x-1, y, chainArray))
-            makeChainHelper(user, x-1, y, chainArray);
-    };
-    
-    var lookDir = function(user, lookX, lookY, chainArray) {
-        return
-            lookY <= game.size - 1
-            && lookX <= game.size - 1
-            && this.tempBoard[lookY][lookX] === user
-            && chainArray.indexOf(lookX + "," + lookY) === -1
-    }
-    
-    this.checkForBreath = function(user,x,y) {
-
-        var moveLocation = x + "," + y;
-        
-        if (y+1 <= game.size-1 && this.tempBoard[y+1][x] === "0"){
-            this.tempChain = [];
-            return "valid";
-        }
-        if(y-1 >= 0 && this.tempBoard[y-1][x] === "0"){
-            this.tempChain = [];
-            return "valid";
-        }
-        if(x+1 <= game.size-1 && this.tempBoard[y][x+1] === "0"){
-            this.tempChain = [];
-            return "valid";
-        }
-        if(x-1 >=0 && this.tempBoard[y][x-1] === "0"){
-            this.tempChain = [];
-            return "valid";
-        } else {
-            //place current stone coordinates into tempChain
-            this.tempChain.push(moveLocation);
-            if(y+1 <= game.size -1 && this.tempBoard[y+1][x] === user && this.tempChain.indexOf(x + "," + (y+1)) === -1 ){
-                return this.checkForBreath(user, x, y+1);
-            }
-            if(y-1 >=0 && this.tempBoard[y-1][x] === user && this.tempChain.indexOf(x + "," + (y-1)) === -1 ){
-                return this.checkForBreath(user, x, y-1)
-            }
-            if(x+1 <= game.size-1 && this.tempBoard[y][x+1] === user && this.tempChain.indexOf((x+1) + "," + y) === -1){
-                return this.checkForBreath(user, x+1, y);
-            }
-            if(x-1 >=0 && this.tempBoard[y][x-1] === user && this.tempChain.indexOf((x-1) + "," + y) === -1 ){
-                return this.checkForBreath(user, x-1, y);
-            }
-            else {
-                this.tempChain = [];
-                return "invalid";
-            }
-        }
-    };
-    
+     
     this.placeStone = function(user, x, y){
         this.tempBoard[y][x] = user;
     };
-    
     this.removeStone = function(x,y){
         this.tempBoard[y][x] = "0";
         var loc = x + "," + y;
         this.grayOutUI(loc);
     };
-    
     this.grayOutUI = function(place){
-        document.getElementById(place).style.backgroundColor = "gray";
+            document.getElementById(place).style.backgroundColor = "gray";
     };
+    //0north,1south,2east,3west chains;
     
-    this.killChain = function(user,x,y){
-        this.removeStone(x,y);
+        this.chainCompare = function(){
+        for(var i = 0; i < this.chainNorth.length; i++){
+            if(this.chainSouth.indexOf(this.chainNorth[i]) != -1){
+                this.chainsToRemove[1] = 0;
+            }
+            if(this.chainEast.indexOf(this.chainNorth[i]) != -1){
+                this.chainsToRemove[2] = 0;
+            }
+            if(this.chainWest.indexOf(this.chainNorth[i]) != -1){
+                this.chainsToRemove[3] = 0;
+            }
+        };
+        for(var i = 0; i < this.chainSouth.length; i++){
+            if(this.chainEast.indexOf(this.chainSouth[i]) != -1){
+                this.chainsToRemove[2] = 0;
+            }
+            if(this.chainWest.indexOf(this.chainSouth[i]) != -1){
+                this.chainsToRemove[3] = 0;
+            }
+        }
+        for(var i = 0; i < this.chainEast.length; i++){
+            if(this.chainWest.indexOf(this.chainEast[i]) != -1){
+                this.chainsToRemove[3] = 0;
+            }
+        }
         
-        if(user === this.black)
-            document.getElementById("whiteHasCaptured").innerHTML = ++game.whiteHasCaptured;
-        else
-            document.getElementById("blackHasCaptured").innerHTML = ++game.blackHasCaptured;
+    };
+    this.makeChain = function(user, x, y){
+        var chainArray = [];
+        this.makeChainHelper(user, x, y, chainArray);
+        return chainArray;
         
-        if(y+1 <= game.size -1 && this.tempBoard[y+1][x] === user){
-            this.killChain(user,x,y+1);
+    };
+    this.makeChainHelper = function(user, x, y, chainArray){
+        stoneLoc = x + "," + y;
+        chainArray.push(stoneLoc);
+        if(this.lookDir(x, y, user, "N") && chainArray.indexOf(x + "," + (y+1)) === -1){
+            this.makeChainHelper(user, x, y+1, chainArray);
+        };
+        if(this.lookDir(x, y, user, "S") && chainArray.indexOf(x + "," + (y-1)) === -1){
+            this.makeChainHelper(user, x, y-1, chainArray);
+        };
+        if(this.lookDir(x, y, user, "E") && chainArray.indexOf((x+1) + "," + y) === -1){
+            this.makeChainHelper(user, x+1, y, chainArray);
+        };
+        if(this.lookDir(x, y, user, "W") && chainArray.indexOf((x-1) + "," + y) === -1){
+            this.makeChainHelper(user, x-1, y, chainArray);
+        };
+    };
+    this.KillChain =function(user, chainsToKill){
+        if(chainsToKill[0] === 1){
+            this.killChainHelper(user, this.chainNorth);
         }
-        if (y-1 >=0 && this.tempBoard[y-1][x] === user){
-            this.killChain(user, x, y-1);
+        if(chainsToKill[1] === 1){
+            this.killChainHelper(user, this.chainSouth);
         }
-        if(x+1 <= game.size-1 && this.tempBoard[y][x+1] === user){
-            this.killChain(user,x+1,y);
+        if(chainsToKill[2] === 1){
+            this.killChainHelper(user, this.chainEast);
         }
-        if (x-1 >=0 && this.tempBoard[y][x-1] === user){
-            this.killChain(user,x-1,y);
+        if(chainsToKill[3] === 1){
+            this.killChainHelper(user, this.chainWest);
         }
     };
-    
+    this.killChainHelper = function(user, chainArray){
+        for(var i = 0; i < chainArray.length; i++){
+            var x = chainArray[i].split(",")[0]*1;
+            var y = chainArray[i].split(",")[1]*1;
+            this.removeStone(x,y);
+            if(user === this.white){
+               document.getElementById("whiteHasCaptured").innerHTML = ++game.whiteHasCaptured;
+            }
+            else{
+                document.getElementById("blackHasCaptured").innerHTML = ++game.blackHasCaptured;
+            }
+        };
+    };
     //will work after finishing get board state
     this.checkForKo = function(){
         var matches = 0;
@@ -198,15 +250,17 @@ function Internals(game){
         return (matches === game.size * game.size);
     };
     
-    this.updateGameBoard = function() {
-        for (var i = 0; i < game.size; i++) {
-            for(var j = 0; j < game.size; j++) {
+    this.updateGameBoard = function(){
+        for (var i = 0; i < game.size; i++) 
+        {
+            for(var j = 0; j < game.size; j++)
+            {
                 game.board[i][j] = this.tempBoard[i][j];
             }
         }
     };
     
-    this.changeTurn = function() {
+    this.changeTurn = function(){
         game.isBlackTurn = !game.isBlackTurn;
         
         if(game.isBlackTurn)
@@ -214,8 +268,7 @@ function Internals(game){
         else
             document.getElementById("whoseTurn").innerHTML = "White's turn";
     };
-    
-    this.boardMatcher = function(board1, board2) {
+    this.boardMatcher = function(board1,board2){
         for (var i = 0; i < game.size; i++) {
             for (var j = 0; j < game.size; j++){
                 if(board1[i][j] != board2[i][j]){
